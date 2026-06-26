@@ -3,28 +3,41 @@
 namespace GeniusSystem\CurlFacade;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Config;  
 
 class CurlService
 {
-    private string $baseUrl = 'https://6a2912e8f59cb8f65f1c674f.mockapi.io/api/v1';
-
-    public function get(string $endpoint)
+    /**
+     * Perform an HTTP request based on a defined connection name.
+     */
+    private function getBaseUrl(string $connection): string
     {
-        return Http::get($this->baseUrl . $endpoint)->json();
+        $baseUrl = Config::get("curl-facade.connections.$connection.base_url");
+
+        if (!$baseUrl) {
+            throw new \InvalidArgumentException("Connection [{$connection}] is not defined in your config file.");
+        }
+
+        return $baseUrl;
     }
 
-    public function post(string $endpoint, array $data)
+    public function get(string $connection, string $endpoint)
     {
-        return Http::post($this->baseUrl . $endpoint, $data)->json();
+        return Http::get($this->getBaseUrl($connection) . $endpoint)->json();
     }
 
-    public function patch(string $endpoint, array $data)
+    public function post(string $connection, string $endpoint, array $data)
     {
-        return Http::patch($this->baseUrl . $endpoint, $data)->json();
+        return Http::post($this->getBaseUrl($connection) . $endpoint, $data)->json();
     }
 
-    public function delete(string $endpoint)
+    public function patch(string $connection, string $endpoint, array $data)
     {
-        return Http::delete($this->baseUrl . $endpoint)->json();
+        return Http::patch($this->getBaseUrl($connection) . $endpoint, $data)->json();
+    }
+
+    public function delete(string $connection, string $endpoint)
+    {
+        return Http::delete($this->getBaseUrl($connection) . $endpoint)->json();
     }
 }
