@@ -21,10 +21,7 @@ class CurlService
         return $baseUrl;
     }
 
-    /**
-     * Smart client helper: Dynamically checks the specific connection config 
-     * and only attaches headers if that connection has keys defined.
-     */
+    
     private function clientForConnection(string $connection)
     {
         $client = Http::withHeaders([
